@@ -3,1274 +3,664 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cozy — Personal Sales Tracker</title>
+  <title>Cozy — Sales Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-  <!-- Firebase Compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Cozy Latte (Light Theme) */
-      --background: #fbf8f5;
-      --foreground: #221a16;
+      --background: #faf6f7;
+      --foreground: #1f0d12;
       --card: #ffffff;
-      --card-foreground: #221a16;
-      --primary: #c26738;
-      --primary-hover: #ab572c;
+      --card-foreground: #1f0d12;
+      --muted: #f0e4e7;
+      --muted-foreground: #73575f;
+      --primary: #801b2a;
+      --primary-hover: #681421;
       --primary-foreground: #ffffff;
-      --primary-glow: rgba(194, 103, 56, 0.15);
-      --secondary: #f4ecdf;
-      --secondary-foreground: #5a351e;
-      --muted: #f3ece4;
-      --muted-foreground: #786558;
-      --border: #e9ddce;
-      --input: #e4d6c4;
-      --destructive: #dc2626;
-      --success: #15803d;
-      --warning: #b45309;
-      --sidebar: #f5ede1;
-      --sidebar-border: #e6dac8;
-      --radius: 14px;
-    }
-
-    .dark {
-      /* Cozy Warm Espresso (Dark Theme) */
-      --background: #0f0b0a;
-      --foreground: #faf3ec;
-      --card: #181210;
-      --card-foreground: #faf3ec;
-      --primary: #d97736;
-      --primary-hover: #e68846;
-      --primary-foreground: #ffffff;
-      --primary-glow: rgba(217, 119, 54, 0.18);
-      --secondary: #271c17;
-      --secondary-foreground: #fde8d7;
-      --muted: #1f1613;
-      --muted-foreground: #aa9384;
-      --border: #31231d;
-      --input: #31231d;
+      --primary-soft: rgba(128, 27, 42, 0.12);
+      --border: #e4d2d6;
+      --input: #dfc9ce;
       --destructive: #ef4444;
-      --success: #22c55e;
-      --warning: #f59e0b;
-      --sidebar: #130e0c;
-      --sidebar-border: #291d18;
+      --shadow: 0 10px 30px -10px rgba(128, 27, 42, 0.18);
     }
 
-    /* Cozy Accent Presets */
-    html[data-accent="terracotta"] {
-      --primary: #c45a4a;
-      --primary-hover: #b34a3a;
-      --primary-glow: rgba(196, 90, 74, 0.18);
-    }
-    html.dark[data-accent="terracotta"] {
-      --primary: #e06d5c;
-      --primary-hover: #ea7c6b;
-      --primary-glow: rgba(224, 109, 92, 0.2);
-    }
-
-    html[data-accent="caramel"] {
-      --primary: #b8732e;
-      --primary-hover: #a16223;
-      --primary-glow: rgba(184, 115, 46, 0.18);
-    }
-    html.dark[data-accent="caramel"] {
-      --primary: #e59344;
-      --primary-hover: #f0a356;
-      --primary-glow: rgba(229, 147, 68, 0.2);
-    }
-
-    html[data-accent="sage"] {
-      --primary: #4d7c5f;
-      --primary-hover: #3d684e;
-      --primary-glow: rgba(77, 124, 95, 0.18);
-    }
-    html.dark[data-accent="sage"] {
-      --primary: #5fa87d;
-      --primary-hover: #6eb78c;
-      --primary-glow: rgba(95, 168, 125, 0.2);
-    }
-
-    html[data-accent="rose"] {
-      --primary: #b8526a;
-      --primary-hover: #a3435b;
-      --primary-glow: rgba(184, 82, 106, 0.18);
-    }
-    html.dark[data-accent="rose"] {
-      --primary: #d46882;
-      --primary-hover: #e07993;
-      --primary-glow: rgba(212, 104, 130, 0.2);
+    html.dark {
+      --background: #0a0608;
+      --foreground: #f2eaec;
+      --card: #130b0e;
+      --card-foreground: #f2eaec;
+      --muted: #1d1015;
+      --muted-foreground: #9e878e;
+      --primary: #9e2a3b;
+      --primary-hover: #84202f;
+      --primary-foreground: #ffffff;
+      --primary-soft: rgba(158, 42, 59, 0.16);
+      --border: #2c181f;
+      --input: #26141b;
+      --destructive: #f87171;
+      --shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.65);
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--background);
       color: var(--foreground);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
       overflow-x: hidden;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Top Navigation Bar */
-    .top-nav {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
+    /* Subtle animated waves */
+    .bg-waves {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    @keyframes wave-drift {
+      0%, 100% { transform: translateX(0) translateY(0); }
+      50% { transform: translateX(-25%) translateY(4px); }
+    }
+
+    .wave-bottom {
+      position: absolute;
+      bottom: -80px;
+      left: 0;
+      width: 200%;
+      height: 320px;
+      color: var(--primary);
+      opacity: 0.06;
+      animation: wave-drift 16s ease-in-out infinite;
+    }
+
+    .wave-top {
+      position: absolute;
+      top: -80px;
+      right: 0;
+      width: 200%;
+      height: 320px;
+      color: var(--primary);
+      opacity: 0.05;
+      animation: wave-drift 20s ease-in-out infinite reverse;
+    }
+
+    /* Top Header */
+    .top-bar {
+      position: relative;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.15);
+      padding: 16px 20px;
     }
 
-    .brand-wrap {
+    .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      text-decoration: none;
-      color: inherit;
     }
 
-    .brand-logo {
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
       font-family: 'Great Vibes', cursive;
-      font-size: 34px;
+      font-size: 26px;
       font-weight: 400;
       color: var(--primary);
       line-height: 1;
+      margin-bottom: -2px;
     }
 
-    .brand-badge {
-      font-size: 10.5px;
-      font-weight: 700;
+    .brand-sub {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--primary-glow);
-      color: var(--primary);
-      border: 1px solid var(--border);
+      color: var(--muted-foreground);
     }
 
-    /* Cloud Sync Badge */
-    .sync-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--foreground);
-    }
-
-    .sync-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 6px var(--success);
-    }
-
-    .sync-dot.syncing {
-      background: var(--warning);
-      box-shadow: 0 0 6px var(--warning);
-      animation: pulse 1s infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { opacity: 0.5; }
-      to { opacity: 1; }
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .palette-picker {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--secondary);
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      font-size: 11px;
-    }
-
-    .swatch-btn {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease;
-    }
-
-    .swatch-btn:hover {
-      transform: scale(1.15);
-    }
-
-    .swatch-btn.active {
-      border-color: #ffffff;
-      box-shadow: 0 0 0 1.5px var(--primary);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 10px;
-      font-size: 12.5px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s ease;
-      text-decoration: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: var(--primary-foreground);
-      box-shadow: 0 4px 14px -3px var(--primary-glow);
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--foreground);
-      border: 1px solid var(--border);
-    }
-
-    .btn-outline:hover {
-      background: var(--secondary);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .btn-sm {
-      padding: 5px 10px;
-      font-size: 11.5px;
-      border-radius: 8px;
-    }
-
-    .btn-icon {
+    .icon-btn {
       width: 36px;
       height: 36px;
-      padding: 0;
-      border-radius: 10px;
-      background: var(--secondary);
-      border: 1px solid var(--border);
+      border-radius: 9999px;
+      border: 1px solid transparent;
+      background: transparent;
       color: var(--foreground);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
     }
 
-    .btn-icon:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+    .icon-btn:hover {
+      background-color: var(--muted);
+      border-color: var(--border);
     }
 
-    /* App Shell */
-    .app-layout {
-      display: flex;
+    /* Main Content */
+    .main-container {
+      position: relative;
+      z-index: 10;
       flex: 1;
-      min-height: calc(100vh - 61px);
-    }
-
-    /* Sidebar Navigation */
-    .sidebar {
-      width: 230px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--sidebar-border);
       display: flex;
       flex-direction: column;
-      flex-shrink: 0;
-      padding: 16px 12px;
-      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 16px 64px;
     }
 
-    .nav-label {
-      font-size: 10.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+    .center-script {
+      font-family: 'Great Vibes', cursive;
+      font-size: 44px;
+      font-weight: 400;
+      color: var(--primary);
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .center-subtitle {
+      font-size: 14px;
       color: var(--muted-foreground);
-      padding: 8px 12px 4px;
+      margin-bottom: 32px;
+      text-align: center;
     }
 
-    .sidebar-link {
+    /* Profile Grid */
+    .profiles-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      max-width: 640px;
+      width: 100%;
+    }
+
+    .profile-card {
+      width: 124px;
+      padding: 18px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      color: var(--card-foreground);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      text-align: center;
+    }
+
+    .profile-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 9999px;
+      background-color: var(--primary-soft);
+      color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 10px;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-card:hover .profile-avatar {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .profile-name {
       font-size: 13px;
       font-weight: 500;
       color: var(--foreground);
-      background: transparent;
-      border: none;
-      width: 100%;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .sidebar-link:hover {
-      background: var(--secondary);
+    .profile-role {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      text-transform: capitalize;
+    }
+
+    .profile-card.add-card {
+      border: 2px dashed var(--border);
+      background-color: transparent;
+      color: var(--muted-foreground);
+      justify-content: center;
+    }
+
+    .profile-card.add-card:hover {
+      border-color: var(--primary);
       color: var(--primary);
     }
 
-    .sidebar-link.active {
-      background: var(--primary);
-      color: #fff;
-      font-weight: 600;
+    .add-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 9999px;
+      background-color: var(--muted);
+      color: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
     }
 
-    .sidebar-footer {
-      margin-top: auto;
-      padding-top: 14px;
-      border-top: 1px solid var(--sidebar-border);
+    /* Skeleton loader */
+    .skeleton-card {
+      width: 124px;
+      height: 140px;
+      border-radius: 16px;
+      background-color: var(--muted);
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Modal Dialog */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background-color: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background-color: var(--background);
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      animation: modal-in 0.18s ease-out;
+    }
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.95) translateY(4px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .modal-close:hover {
+      color: var(--foreground);
+      background-color: var(--muted);
+    }
+
+    .modal-header-center {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-
-    .cozy-tagline {
-      font-size: 11px;
-      color: var(--muted-foreground);
+      align-items: center;
       text-align: center;
-      line-height: 1.4;
-      font-style: italic;
+      margin-bottom: 20px;
     }
 
-    /* Main Content Area */
-    .main-body {
-      flex: 1;
-      padding: 24px 30px 48px;
-      max-width: 1400px;
-      margin: 0 auto;
-      width: 100%;
+    .modal-header-left {
+      margin-bottom: 18px;
     }
 
-    /* View Sections */
-    .view-pane {
-      display: none;
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--foreground);
     }
 
-    .view-pane.active {
-      display: block;
-      animation: fadeIn 0.18s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Page Header */
-    .page-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-    }
-
-    .page-title {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .page-subtitle {
+    .modal-desc {
       font-size: 13px;
       color: var(--muted-foreground);
       margin-top: 4px;
     }
 
-    /* Metric Stats Grid */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
+    .form-group {
+      margin-bottom: 16px;
     }
 
-    @media (max-width: 1024px) {
-      .stats-row {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 640px) {
-      .stats-row {
-        grid-template-columns: 1fr;
-      }
-      .sidebar {
-        display: none;
-      }
-      .main-body {
-        padding: 16px;
-      }
-    }
-
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.18s ease, border-color 0.18s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--primary);
-    }
-
-    .stat-card::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--primary);
-      opacity: 0.8;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted-foreground);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--foreground);
       margin-bottom: 6px;
     }
 
-    .stat-value {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--foreground);
-      line-height: 1.1;
-    }
-
-    .stat-sub {
-      font-size: 11.5px;
-      color: var(--muted-foreground);
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .stat-highlight {
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    /* Content Panels */
-    .panel-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 24px;
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .panel-heading {
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Charts Grid */
-    .charts-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
-    @media (max-width: 900px) {
-      .charts-row {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .chart-container {
+    .input-wrap {
       position: relative;
-      height: 250px;
-      width: 100%;
-    }
-
-    /* Clean Data Table */
-    .table-box {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .cozy-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-      text-align: left;
-    }
-
-    .cozy-table th {
-      padding: 10px 14px;
-      background: var(--secondary);
-      color: var(--muted-foreground);
-      font-weight: 600;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-
-    .cozy-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-
-    .cozy-table tr:hover td {
-      background: rgba(194, 103, 56, 0.04);
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .status-badge.completed {
-      background: rgba(34, 197, 94, 0.14);
-      color: var(--success);
-    }
-
-    .status-badge.pending {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--warning);
-    }
-
-    .status-badge.refunded {
-      background: rgba(239, 68, 68, 0.14);
-      color: var(--destructive);
-    }
-
-    .pay-badge {
-      font-size: 10.5px;
-      padding: 2px 7px;
-      border-radius: 6px;
-      background: var(--secondary);
-      color: var(--foreground);
-      font-weight: 500;
-      border: 1px solid var(--border);
-    }
-
-    /* Filter Controls */
-    .filter-bar {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
     }
 
-    .search-input {
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      color: var(--muted-foreground);
+      pointer-events: none;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid var(--input);
+      background-color: transparent;
       color: var(--foreground);
-      font-size: 12.5px;
       font-family: inherit;
-      min-width: 220px;
+      font-size: 14px;
       outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .search-input:focus {
+    .form-select option {
+      background-color: var(--card);
+      color: var(--foreground);
+    }
+
+    .form-input.with-icon {
+      padding-left: 38px;
+      padding-right: 38px;
+    }
+
+    .form-input:focus, .form-select:focus {
       border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-soft);
     }
 
-    .select-control {
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--foreground);
-      font-size: 12.5px;
-      font-family: inherit;
-      outline: none;
+    .eye-btn {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--muted-foreground);
       cursor: pointer;
-    }
-
-    .select-control:focus {
-      border-color: var(--primary);
-    }
-
-    /* Modal Dialogs */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(4px);
-      display: none;
+      display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
-      padding: 16px;
+      padding: 4px;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      width: 100%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes modalPop {
-      from { transform: scale(0.96); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-title {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .modal-body {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .form-group label {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--muted-foreground);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: var(--background);
-      border: 1px solid var(--border);
-      color: var(--foreground);
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-    }
-
-    .form-input:focus {
-      border-color: var(--primary);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .profit-preview-pill {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 12.5px;
-      font-weight: 600;
-    }
-
-    .profit-preview-pill span:last-child {
-      color: var(--success);
-      font-size: 14px;
-    }
-
-    .modal-foot {
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    /* Product Cards Grid */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    .product-item-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-      transition: all 0.15s ease;
-    }
-
-    .product-item-card:hover {
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .product-title {
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .price-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      background: var(--secondary);
-      padding: 8px;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    .price-sublabel {
-      font-size: 10px;
-      color: var(--muted-foreground);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-
-    .price-val {
-      font-size: 13px;
-      font-weight: 700;
+    .eye-btn:hover {
       color: var(--foreground);
     }
 
-    /* Toast Notification */
-    .toast-box {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--card);
-      border: 1px solid var(--primary);
-      color: var(--foreground);
-      padding: 10px 16px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      font-size: 12.5px;
-      font-weight: 600;
+    .error-text {
+      font-size: 12px;
+      color: var(--destructive);
+      margin-top: 6px;
       display: none;
+    }
+
+    .error-text.show {
+      display: block;
+    }
+
+    .btn-primary {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      border: none;
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .sync-pill {
+      margin-top: 28px;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      z-index: 200;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background-color: var(--primary-soft);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted-foreground);
     }
 
-    .toast-box.show {
-      display: flex;
-      animation: toastIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background-color: #22c55e;
     }
 
-    @keyframes toastIn {
-      from { transform: translateY(10px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    .sync-dot.connecting {
+      background-color: #eab308;
+      animation: pulse 1s infinite;
     }
   </style>
 </head>
 <body>
+  <!-- Animated Wave Background -->
+  <div class="bg-waves">
+    <svg class="wave-bottom" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="currentColor" d="M0,224L48,213.3C96,203,192,181,288,186.7C384,192,480,224,576,229.3C672,235,768,213,864,192C960,171,1056,149,1152,160C1248,171,1344,213,1392,234.7L1440,256V320H0Z"></path>
+    </svg>
+    <svg class="wave-top" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path fill="currentColor" d="M0,96L48,112C96,128,192,160,288,165.3C384,171,480,149,576,138.7C672,128,768,128,864,149.3C960,171,1056,213,1152,213.3C1248,213,1344,171,1392,149.3L1440,128V0H0Z"></path>
+    </svg>
+  </div>
 
-  <!-- Top Navigation -->
-  <header class="top-nav">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <a href="index.html" class="brand-wrap">
-        <span class="brand-logo">Cozy</span>
-        <span class="brand-badge">Sales Tracker</span>
-      </a>
-
-      <!-- Cloud Sync Indicator -->
-      <div class="sync-badge" id="cloudSyncBadge" title="Realtime Firebase Cloud Database Sync">
-        <span class="sync-dot" id="cloudSyncDot"></span>
-        <span id="cloudSyncText">Firebase Live</span>
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+        <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+        <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+      </svg>
+      <div>
+        <h1 class="brand-title">Cozy</h1>
+        <p class="brand-sub">Sales Tracker</p>
       </div>
     </div>
 
-    <div class="nav-actions">
-      <!-- Live Palette Switcher -->
-      <div class="palette-picker" title="Cozy Color Theme">
-        <span style="color:var(--muted-foreground); margin-right:2px;">Palette:</span>
-        <button class="swatch-btn active" data-accent="default" style="background:#d97736;" onclick="setThemeAccent('default')" title="Warm Amber"></button>
-        <button class="swatch-btn" data-accent="terracotta" style="background:#e06d5c;" onclick="setThemeAccent('terracotta')" title="Terracotta Rose"></button>
-        <button class="swatch-btn" data-accent="caramel" style="background:#e59344;" onclick="setThemeAccent('caramel')" title="Caramel Latte"></button>
-        <button class="swatch-btn" data-accent="sage" style="background:#5fa87d;" onclick="setThemeAccent('sage')" title="Matcha Sage"></button>
-        <button class="swatch-btn" data-accent="rose" style="background:#d46882;" onclick="setThemeAccent('rose')" title="Velvet Rose"></button>
-      </div>
-
-      <!-- Dark/Light Theme Button -->
-      <button class="btn-icon" id="themeBtn" title="Toggle Espresso Dark / Latte Light" onclick="toggleDarkMode()">
-        <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <svg id="sunIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-      </button>
-
-      <button class="btn btn-primary" onclick="openAddSaleModal()">
-        <span>+ Log Sale</span>
-      </button>
-    </div>
+    <button class="icon-btn" id="themeToggleBtn" title="Toggle theme" aria-label="Toggle theme">
+      <svg id="themeIconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+      </svg>
+      <svg id="themeIconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+      </svg>
+    </button>
   </header>
 
-  <div class="app-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="nav-label">Navigation</div>
-      <button class="sidebar-link active" data-view="dashboard" onclick="switchNavView('dashboard')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        <span>Dashboard</span>
-      </button>
-      <button class="sidebar-link" data-view="sales" onclick="switchNavView('sales')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
-        <span>Sales Log</span>
-      </button>
-      <button class="sidebar-link" data-view="products" onclick="switchNavView('products')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-        <span>Products Catalog</span>
-      </button>
-      <button class="sidebar-link" data-view="settings" onclick="switchNavView('settings')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-        <span>Settings & Cloud</span>
-      </button>
+  <!-- Center Profile Picker -->
+  <main class="main-container">
+    <h2 class="center-script">Cozy</h2>
+    <p class="center-subtitle">Who's using Cozy?</p>
 
-      <div class="sidebar-footer">
-        <button class="btn btn-outline btn-sm" onclick="exportSalesToCSV()" style="width:100%;">
-          <span>📥 Export CSV</span>
-        </button>
-        <div class="cozy-tagline">"Simple, warm & effortless sales tracking."</div>
+    <div id="profilesGrid" class="profiles-grid">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+
+    <div class="sync-pill">
+      <span id="syncDot" class="sync-dot connecting"></span>
+      <span id="syncText">Connecting to cloud...</span>
+    </div>
+  </main>
+
+  <!-- PIN / Password Sign In Modal -->
+  <div id="loginModal" class="modal-backdrop">
+    <div class="modal-content">
+      <button type="button" class="modal-close" id="closeLoginModal" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <div class="modal-header-center">
+        <div id="modalAvatar" class="profile-avatar" style="margin-bottom: 12px;">R</div>
+        <h3 id="modalUsername" class="modal-title">Cozy</h3>
+        <p class="modal-desc">Enter your PIN / password to sign in</p>
       </div>
-    </aside>
-
-    <!-- Main Body -->
-    <main class="main-body">
-
-      <!-- VIEW 1: DASHBOARD -->
-      <section id="view-dashboard" class="view-pane active">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Personal Sales Overview ✨</h1>
-            <p class="page-subtitle">Track your revenue, capital, and net profits in real-time with Firebase cloud sync.</p>
+      <form id="pinLoginForm">
+        <div class="form-group">
+          <label class="form-label" for="pinInput">Enter PIN</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" id="pinInput" class="form-input with-icon" placeholder="Enter your PIN or password" autocomplete="current-password" required>
+            <button type="button" class="eye-btn" id="togglePinBtn" aria-label="Show password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-outline btn-sm" onclick="exportSalesToCSV()">Export CSV</button>
-            <button class="btn btn-primary btn-sm" onclick="openAddSaleModal()">+ Log Sale</button>
-          </div>
+          <p id="loginError" class="error-text"></p>
         </div>
-
-        <!-- 4 Metric Cards -->
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-label">Total Revenue</div>
-            <div class="stat-value" id="cardTotalSales">₱0.00</div>
-            <div class="stat-sub"><span id="cardTotalOrders">0</span> orders completed</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Total Capital</div>
-            <div class="stat-value" id="cardTotalCapital" style="color:var(--muted-foreground);">₱0.00</div>
-            <div class="stat-sub">Product costs / capital</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Net Profit</div>
-            <div class="stat-value" id="cardNetProfit" style="color:var(--primary);">₱0.00</div>
-            <div class="stat-sub"><span class="stat-highlight" id="cardProfitMargin">0%</span> profit margin</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Pending / Unpaid</div>
-            <div class="stat-value" id="cardPendingAmount" style="color:var(--warning);">₱0.00</div>
-            <div class="stat-sub"><span id="cardPendingCount">0</span> pending transactions</div>
-          </div>
-        </div>
-
-        <!-- Charts Row -->
-        <div class="charts-row">
-          <div class="panel-card">
-            <div class="panel-header">
-              <div class="panel-heading">Revenue & Net Profit Trend</div>
-              <span style="font-size:11.5px; color:var(--muted-foreground);">Recent Sales</span>
-            </div>
-            <div class="chart-container">
-              <canvas id="revenueTrendChart"></canvas>
-            </div>
-          </div>
-
-          <div class="panel-card">
-            <div class="panel-header">
-              <div class="panel-heading">Sales by Product</div>
-              <span style="font-size:11.5px; color:var(--muted-foreground);">Top Sellers</span>
-            </div>
-            <div class="chart-container">
-              <canvas id="productDonutChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Sales Table Preview -->
-        <div class="panel-card">
-          <div class="panel-header">
-            <div class="panel-heading">Recent Transactions</div>
-            <button class="btn btn-outline btn-sm" onclick="switchNavView('sales')">View All Sales →</button>
-          </div>
-          <div class="table-box">
-            <table class="cozy-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Product</th>
-                  <th>Buyer</th>
-                  <th>Qty</th>
-                  <th>Total Sale</th>
-                  <th>Net Profit</th>
-                  <th>Payment</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="recentSalesTbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 2: SALES LOG -->
-      <section id="view-sales" class="view-pane">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Sales Log 📋</h1>
-            <p class="page-subtitle">Every recorded sale with complete capital, revenue, and profit details.</p>
-          </div>
-          <button class="btn btn-primary" onclick="openAddSaleModal()">+ Log Sale</button>
-        </div>
-
-        <div class="panel-card">
-          <!-- Filters & Search -->
-          <div class="filter-bar">
-            <input type="text" id="salesSearchInput" class="search-input" placeholder="Search buyer, product, email..." oninput="renderSalesTable()">
-            <select id="statusFilterSelect" class="select-control" onchange="renderSalesTable()">
-              <option value="all">All Statuses</option>
-              <option value="completed">Completed Only</option>
-              <option value="pending">Pending Only</option>
-              <option value="refunded">Refunded Only</option>
-            </select>
-            <select id="dateFilterSelect" class="select-control" onchange="renderSalesTable()">
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="7days">Last 7 Days</option>
-              <option value="30days">Last 30 Days</option>
-            </select>
-            <button class="btn btn-outline btn-sm" onclick="exportSalesToCSV()" style="margin-left:auto;">📥 Export CSV</button>
-          </div>
-
-          <div class="table-box">
-            <table class="cozy-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Product</th>
-                  <th>Buyer</th>
-                  <th>Account / Info</th>
-                  <th>Qty</th>
-                  <th>Capital</th>
-                  <th>Sale Price</th>
-                  <th>Net Profit</th>
-                  <th>Payment</th>
-                  <th>Status</th>
-                  <th style="text-align:right;">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="fullSalesTbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 3: PRODUCTS CATALOG -->
-      <section id="view-products" class="view-pane">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Products Catalog 🏷️</h1>
-            <p class="page-subtitle">Configure your default capital costs and selling prices for 1-click sales logging.</p>
-          </div>
-          <button class="btn btn-primary" onclick="openAddProductModal()">+ Add Product</button>
-        </div>
-
-        <div class="products-grid" id="productsGrid"></div>
-      </section>
-
-      <!-- VIEW 4: SETTINGS & BACKUP -->
-      <section id="view-settings" class="view-pane">
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Settings & Cloud Sync ⚙️</h1>
-            <p class="page-subtitle">Customize your currency, store details, or download a full data backup.</p>
-          </div>
-        </div>
-
-        <div class="panel-card" style="max-width:650px;">
-          <h2 class="panel-heading" style="margin-bottom:14px;">Store Preferences</h2>
-          <div style="display:flex; flex-direction:column; gap:14px;">
-            <div class="form-group">
-              <label>Currency Symbol</label>
-              <input type="text" id="settingCurrency" class="form-input" style="max-width:120px;" value="₱">
-            </div>
-            <div class="form-group">
-              <label>Store / Seller Name</label>
-              <input type="text" id="settingStoreName" class="form-input" value="Cozy Digital Shop">
-            </div>
-            <div>
-              <button class="btn btn-primary btn-sm" onclick="saveSettings()">Save Preferences</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel-card" style="max-width:650px;">
-          <h2 class="panel-heading" style="margin-bottom:14px;">Firebase Cloud Sync</h2>
-          <p style="font-size:12.5px; color:var(--muted-foreground); margin-bottom:14px;">
-            Connected to <strong>maisonetoile-5eee1</strong> Realtime Database. All sales, products, and configurations sync seamlessly in real-time across all your devices.
-          </p>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn btn-outline" onclick="syncDataToFirebase(true)">Force Cloud Sync</button>
-            <button class="btn btn-outline" onclick="backupDataJSON()">Export JSON Backup</button>
-            <button class="btn btn-outline" onclick="document.getElementById('jsonFileInput').click()">Import JSON Backup</button>
-            <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="importDataJSON(event)">
-            <button class="btn btn-outline" style="color:var(--destructive); border-color:rgba(239, 68, 68, 0.4);" onclick="resetToSampleData()">Reset Sample Data</button>
-          </div>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- MODAL: ADD / EDIT SALE -->
-  <div class="modal-overlay" id="saleModal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <div class="modal-title" id="saleModalTitle">Log New Sale</div>
-        <button class="btn-icon" style="width:28px; height:28px;" onclick="closeSaleModal()">✕</button>
-      </div>
-      <form id="saleForm" onsubmit="handleSaleSubmit(event)">
-        <div class="modal-body">
-          <input type="hidden" id="saleEditId" value="">
-
-          <div class="form-group">
-            <label>Product</label>
-            <select id="saleProductSelect" class="form-input" onchange="onSaleProductChange()" required>
-              <option value="">Select a product...</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Buyer Name</label>
-              <input type="text" id="saleBuyerName" class="form-input" placeholder="e.g. Maria Clara" required>
-            </div>
-            <div class="form-group">
-              <label>Account / Details</label>
-              <input type="text" id="saleAccountInfo" class="form-input" placeholder="e.g. user@gmail.com (Profile 1)">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Quantity</label>
-              <input type="number" id="saleQty" class="form-input" value="1" min="1" oninput="calculateSaleProfit()" required>
-            </div>
-            <div class="form-group">
-              <label>Payment Method</label>
-              <select id="salePaymentMethod" class="form-input">
-                <option value="GCash">GCash</option>
-                <option value="Maya">Maya</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="PayPal">PayPal</option>
-                <option value="Cash / Other">Cash / Other</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Unit Capital (Cost)</label>
-              <input type="number" step="0.01" id="saleCapital" class="form-input" placeholder="0.00" oninput="calculateSaleProfit()" required>
-            </div>
-            <div class="form-group">
-              <label>Unit Selling Price</label>
-              <input type="number" step="0.01" id="salePrice" class="form-input" placeholder="0.00" oninput="calculateSaleProfit()" required>
-            </div>
-          </div>
-
-          <div class="profit-preview-pill">
-            <span>Computed Net Profit:</span>
-            <span id="saleProfitPreview">₱0.00</span>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Status</label>
-              <select id="saleStatus" class="form-input">
-                <option value="completed">Completed / Paid</option>
-                <option value="pending">Pending</option>
-                <option value="refunded">Refunded</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Sale Date</label>
-              <input type="date" id="saleDate" class="form-input" required>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Notes (Optional)</label>
-            <input type="text" id="saleNotes" class="form-input" placeholder="e.g. 1 month shared, renewal next month">
-          </div>
-        </div>
-
-        <div class="modal-foot">
-          <button type="button" class="btn btn-outline" onclick="closeSaleModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="saleSubmitBtn">Save Sale</button>
-        </div>
+        <button type="submit" id="signInBtn" class="btn-primary">Sign In</button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: ADD / EDIT PRODUCT -->
-  <div class="modal-overlay" id="productModal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <div class="modal-title" id="productModalTitle">Add New Product</div>
-        <button class="btn-icon" style="width:28px; height:28px;" onclick="closeProductModal()">✕</button>
+  <!-- Add Profile Modal -->
+  <div id="addProfileModal" class="modal-backdrop">
+    <div class="modal-content">
+      <button type="button" class="modal-close" id="closeAddProfileModal" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <div class="modal-header-left">
+        <h3 class="modal-title">Add Profile</h3>
+        <p class="modal-desc">Create a new user profile</p>
       </div>
-      <form id="productForm" onsubmit="handleProductSubmit(event)">
-        <div class="modal-body">
-          <input type="hidden" id="prodEditId" value="">
-
-          <div class="form-group">
-            <label>Product Name</label>
-            <input type="text" id="prodName" class="form-input" placeholder="e.g. Netflix Premium (1 Month)" required>
-          </div>
-
-          <div class="form-group">
-            <label>Category / Tag</label>
-            <input type="text" id="prodCategory" class="form-input" placeholder="e.g. Streaming, Education, Design">
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Default Capital (Cost)</label>
-              <input type="number" step="0.01" id="prodCapital" class="form-input" placeholder="0.00" oninput="calculateProductProfit()" required>
-            </div>
-            <div class="form-group">
-              <label>Default Selling Price</label>
-              <input type="number" step="0.01" id="prodPrice" class="form-input" placeholder="0.00" oninput="calculateProductProfit()" required>
-            </div>
-          </div>
-
-          <div class="profit-preview-pill">
-            <span>Profit Margin per Unit:</span>
-            <span id="prodProfitPreview">₱0.00</span>
-          </div>
+      <form id="addProfileForm">
+        <div class="form-group">
+          <label class="form-label" for="newUsername">Username</label>
+          <input type="text" id="newUsername" class="form-input" placeholder="Enter username (e.g. @admin)" required>
         </div>
-
-        <div class="modal-foot">
-          <button type="button" class="btn btn-outline" onclick="closeProductModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Product</button>
+        <div class="form-group">
+          <label class="form-label" for="newPin">PIN / Password</label>
+          <input type="password" id="newPin" class="form-input" placeholder="Enter PIN or password" required>
         </div>
+        <div class="form-group">
+          <label class="form-label" for="newRole">Role</label>
+          <select id="newRole" class="form-select">
+            <option value="admin">Admin</option>
+            <option value="owner" id="ownerRoleOption">Owner</option>
+          </select>
+        </div>
+        <p id="addProfileError" class="error-text" style="margin-bottom: 12px;"></p>
+        <button type="submit" id="createProfileBtn" class="btn-primary">Create Profile</button>
       </form>
     </div>
   </div>
 
-  <!-- Toast Box -->
-  <div class="toast-box" id="toast">
-    <span id="toastMsg">Action saved!</span>
-  </div>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <script>
-    // --- FIREBASE CONFIGURATION ---
+    // Theme initialization (default to dark to match reference format)
+    (function initTheme() {
+      const saved = localStorage.getItem('theme') || 'dark';
+      if (saved === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+      updateThemeIcons();
+    })();
+
+    function updateThemeIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const moon = document.getElementById('themeIconMoon');
+      const sun = document.getElementById('themeIconSun');
+      if (moon && sun) {
+        moon.style.display = isDark ? 'block' : 'none';
+        sun.style.display = isDark ? 'none' : 'block';
+      }
+    }
+
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeIcons();
+    });
+
+    // Firebase Configuration
+    const APP_NAME = 'cozy';
     const firebaseConfig = {
       apiKey: "AIzaSyDKkWYavtCU1JE5JlvUXHSr90MqqisGtgM",
       authDomain: "maisonetoile-5eee1.firebaseapp.com",
@@ -1282,890 +672,329 @@
       measurementId: "G-KDVYTWPHRC"
     };
 
-    let fbApp = null;
-    let fbDb = null;
-    let fbAnalytics = null;
-    let isFirebaseReady = false;
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    try {
-      fbApp = firebase.initializeApp(firebaseConfig);
-      fbDb = firebase.database();
-      if (typeof firebase.analytics === 'function') {
-        fbAnalytics = firebase.analytics();
-      }
-      isFirebaseReady = true;
-      console.log('Firebase initialized successfully.');
-    } catch (err) {
-      console.warn('Firebase init warning (using LocalStorage fallback):', err);
+    function getRef(path) {
+      return database.ref(`${APP_NAME}/${path}`);
     }
 
-    // --- STATE MANAGEMENT ---
-    const STORAGE_KEY = 'cozy_sales_state_v1';
-    const DB_ROOT = 'cozy';
+    function sanitizeFirebaseKey(key) {
+      return key.replace(/[.#$[\]\/]/g, '_');
+    }
 
-    const DEFAULT_PRODUCTS = [
-      { id: 'prod_1', name: 'Netflix Premium (Shared)', category: 'Entertainment', capital: 40, price: 80 },
-      { id: 'prod_2', name: 'Spotify Individual (1 Mo)', category: 'Music', capital: 25, price: 60 },
-      { id: 'prod_3', name: 'Canva Pro Lifetime / 1Y', category: 'Productivity', capital: 30, price: 90 },
-      { id: 'prod_4', name: 'YouTube Premium Family Slot', category: 'Streaming', capital: 35, price: 75 },
-      { id: 'prod_5', name: 'Disney+ Premium Solo', category: 'Entertainment', capital: 80, price: 150 },
-      { id: 'prod_6', name: 'ChatGPT Plus Shared', category: 'AI Tools', capital: 90, price: 180 }
-    ];
-
-    const DEFAULT_SALES = [
-      {
-        id: 'sale_1',
-        productId: 'prod_1',
-        productName: 'Netflix Premium (Shared)',
-        buyer: 'Sarah Jenkins',
-        accountInfo: 'net1@cozy.io (Profile 1)',
-        qty: 1,
-        capital: 40,
-        price: 80,
-        payment: 'GCash',
-        status: 'completed',
-        date: new Date(Date.now() - 86400000 * 3).toISOString().slice(0, 10),
-        notes: 'Fast transaction'
-      },
-      {
-        id: 'sale_2',
-        productId: 'prod_2',
-        productName: 'Spotify Individual (1 Mo)',
-        buyer: 'Carlo Santos',
-        accountInfo: 'carlo.santos@gmail.com',
-        qty: 2,
-        capital: 25,
-        price: 60,
-        payment: 'Maya',
-        status: 'completed',
-        date: new Date(Date.now() - 86400000 * 2).toISOString().slice(0, 10),
-        notes: 'Bought for sibling'
-      },
-      {
-        id: 'sale_3',
-        productId: 'prod_3',
-        productName: 'Canva Pro Lifetime / 1Y',
-        buyer: 'Janine Dela Cruz',
-        accountInfo: 'janine.design@gmail.com',
-        qty: 1,
-        capital: 30,
-        price: 90,
-        payment: 'GCash',
-        status: 'completed',
-        date: new Date(Date.now() - 86400000 * 1).toISOString().slice(0, 10),
-        notes: 'Invite link sent'
-      },
-      {
-        id: 'sale_4',
-        productId: 'prod_5',
-        productName: 'Disney+ Premium Solo',
-        buyer: 'Marcus Aurelio',
-        accountInfo: 'disney_solo@cozy.io',
-        qty: 1,
-        capital: 80,
-        price: 150,
-        payment: 'Bank Transfer',
-        status: 'completed',
-        date: new Date().toISOString().slice(0, 10),
-        notes: 'Regular customer'
-      },
-      {
-        id: 'sale_5',
-        productId: 'prod_6',
-        productName: 'ChatGPT Plus Shared',
-        buyer: 'Liam Ramos',
-        accountInfo: 'gpt_shared_2@cozy.io',
-        qty: 1,
-        capital: 90,
-        price: 180,
-        payment: 'GCash',
-        status: 'pending',
-        date: new Date().toISOString().slice(0, 10),
-        notes: 'Awaiting receipt screenshot'
+    function hashPassword(password) {
+      let hash = 0;
+      for (let i = 0; i < password.length; i++) {
+        const char = password.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
       }
-    ];
+      return hash.toString(36);
+    }
 
-    let state = {
-      currency: '₱',
-      storeName: 'Cozy Digital Shop',
-      products: [],
-      sales: []
-    };
-
-    function loadLocalState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        try {
-          state = JSON.parse(raw);
-        } catch (e) {
-          initDefaultState();
-        }
+    // Connection Status
+    const syncDot = document.getElementById('syncDot');
+    const syncText = document.getElementById('syncText');
+    database.ref('.info/connected').on('value', (snap) => {
+      if (snap.val() === true) {
+        syncDot.classList.remove('connecting');
+        syncText.textContent = 'Synced with cloud';
       } else {
-        initDefaultState();
+        syncDot.classList.add('connecting');
+        syncText.textContent = 'Connecting to cloud...';
       }
-    }
+    });
 
-    function initDefaultState() {
-      state = {
-        currency: '₱',
-        storeName: 'Cozy Digital Shop',
-        products: JSON.parse(JSON.stringify(DEFAULT_PRODUCTS)),
-        sales: JSON.parse(JSON.stringify(DEFAULT_SALES))
-      };
-      saveLocalState();
-    }
-
-    function saveLocalState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function syncDataToFirebase(showToastMsg = false) {
-      if (!isFirebaseReady || !fbDb) return;
-      setSyncStatus(true);
-      fbDb.ref(DB_ROOT).set(state)
-        .then(() => {
-          setSyncStatus(false);
-          if (showToastMsg) showToast('Cloud database synced!');
-        })
-        .catch(err => {
-          console.warn('Firebase write error:', err);
-          setSyncStatus(false);
-        });
-    }
-
-    function initFirebaseListeners() {
-      if (!isFirebaseReady || !fbDb) {
-        loadLocalState();
-        renderAll();
-        return;
+    // Sync custom Shop Name if configured by Owner
+    getRef('settings/owner/shopConfig').on('value', (snap) => {
+      const cfg = snap.val();
+      if (cfg && cfg.shopName) {
+        const name = cfg.shopName.trim();
+        document.title = `${name} - Sales Tracker`;
+        const brandTitle = document.querySelector('.brand-title');
+        const centerScript = document.querySelector('.center-script');
+        const centerSub = document.querySelector('.center-subtitle');
+        if (brandTitle) brandTitle.textContent = name;
+        if (centerScript) centerScript.textContent = name;
+        if (centerSub) centerSub.textContent = `Who's using ${name}?`;
       }
+    });
 
-      setSyncStatus(true);
-      fbDb.ref(DB_ROOT).on('value', snapshot => {
-        const cloudData = snapshot.val();
-        setSyncStatus(false);
-
-        if (cloudData && (cloudData.sales || cloudData.products)) {
-          state.currency = cloudData.currency || '₱';
-          state.storeName = cloudData.storeName || 'Cozy Digital Shop';
-          state.products = Array.isArray(cloudData.products) ? cloudData.products : Object.values(cloudData.products || {});
-          state.sales = Array.isArray(cloudData.sales) ? cloudData.sales : Object.values(cloudData.sales || {});
-          saveLocalState();
-        } else {
-          // If Firebase is brand new/empty, seed it with initial cozy sample data
-          loadLocalState();
-          syncDataToFirebase();
-        }
-        renderAll();
-      }, err => {
-        console.warn('Firebase read error, falling back to local storage:', err);
-        setSyncStatus(false);
-        loadLocalState();
-        renderAll();
-      });
-    }
-
-    function setSyncStatus(syncing) {
-      const dot = document.getElementById('cloudSyncDot');
-      const text = document.getElementById('cloudSyncText');
-      if (dot && text) {
-        if (syncing) {
-          dot.classList.add('syncing');
-          text.textContent = 'Syncing...';
-        } else {
-          dot.classList.remove('syncing');
-          text.textContent = 'Firebase Live';
-        }
-      }
-    }
-
-    function formatMoney(amount) {
-      const num = parseFloat(amount) || 0;
-      return `${state.currency || '₱'}${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-
-    // --- CHART INSTANCES ---
-    let revenueChartInstance = null;
-    let productChartInstance = null;
-
-    // --- NAVIGATION ---
-    function switchNavView(viewName) {
-      document.querySelectorAll('.sidebar-link').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-view') === viewName);
-      });
-      document.querySelectorAll('.view-pane').forEach(pane => {
-        pane.classList.remove('active');
-      });
-      const target = document.getElementById(`view-${viewName}`);
-      if (target) {
-        target.classList.add('active');
-      }
-
-      if (viewName === 'dashboard') {
-        renderDashboard();
-      } else if (viewName === 'sales') {
-        renderSalesTable();
-      } else if (viewName === 'products') {
-        renderProductsCatalog();
-      }
-    }
-
-    function renderAll() {
-      if (document.getElementById('settingCurrency')) {
-        document.getElementById('settingCurrency').value = state.currency || '₱';
-      }
-      if (document.getElementById('settingStoreName')) {
-        document.getElementById('settingStoreName').value = state.storeName || 'Cozy Digital Shop';
-      }
-      renderDashboard();
-      renderSalesTable();
-      renderProductsCatalog();
-    }
-
-    // --- RENDER DASHBOARD ---
-    function renderDashboard() {
-      let totalSales = 0;
-      let totalCapital = 0;
-      let completedOrders = 0;
-      let pendingSales = 0;
-      let pendingCount = 0;
-
-      (state.sales || []).forEach(s => {
-        const itemSales = (s.price || 0) * (s.qty || 1);
-        const itemCapital = (s.capital || 0) * (s.qty || 1);
-
-        if (s.status === 'completed') {
-          totalSales += itemSales;
-          totalCapital += itemCapital;
-          completedOrders++;
-        } else if (s.status === 'pending') {
-          pendingSales += itemSales;
-          pendingCount++;
-        }
-      });
-
-      const netProfit = totalSales - totalCapital;
-      const profitMargin = totalSales > 0 ? ((netProfit / totalSales) * 100).toFixed(1) : 0;
-
-      document.getElementById('cardTotalSales').textContent = formatMoney(totalSales);
-      document.getElementById('cardTotalOrders').textContent = completedOrders;
-      document.getElementById('cardTotalCapital').textContent = formatMoney(totalCapital);
-      document.getElementById('cardNetProfit').textContent = formatMoney(netProfit);
-      document.getElementById('cardProfitMargin').textContent = `${profitMargin}%`;
-      document.getElementById('cardPendingAmount').textContent = formatMoney(pendingSales);
-      document.getElementById('cardPendingCount').textContent = pendingCount;
-
-      renderCharts();
-      renderRecentSales();
-    }
-
-    function renderRecentSales() {
-      const tbody = document.getElementById('recentSalesTbody');
-      tbody.innerHTML = '';
-
-      const recent = [...(state.sales || [])].reverse().slice(0, 5);
-      if (recent.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--muted-foreground);">No sales logged yet. Click "+ Log Sale" to start!</td></tr>`;
-        return;
-      }
-
-      recent.forEach(s => {
-        const total = (s.price || 0) * (s.qty || 1);
-        const profit = total - ((s.capital || 0) * (s.qty || 1));
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="color:var(--muted-foreground);">${s.date || '—'}</td>
-          <td><strong>${escapeHtml(s.productName)}</strong></td>
-          <td>${escapeHtml(s.buyer)}</td>
-          <td>${s.qty || 1}</td>
-          <td><strong>${formatMoney(total)}</strong></td>
-          <td style="color:var(--success); font-weight:700;">+${formatMoney(profit)}</td>
-          <td><span class="pay-badge">${s.payment || 'GCash'}</span></td>
-          <td><span class="status-badge ${s.status}">${s.status}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderCharts() {
-      const isDark = document.documentElement.classList.contains('dark');
-      const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#d97736';
-      const textColor = isDark ? '#aa9384' : '#786558';
-      const gridColor = isDark ? '#261c17' : '#ede2d3';
-
-      // 1. Revenue & Profit Trend (Last 7 sales)
-      const sorted = [...(state.sales || [])].reverse().slice(-7);
-      const labels = sorted.map((s, idx) => s.date ? s.date.slice(5) : `Sale #${idx+1}`);
-      const salesData = sorted.map(s => (s.price || 0) * (s.qty || 1));
-      const profitData = sorted.map(s => ((s.price || 0) * (s.qty || 1)) - ((s.capital || 0) * (s.qty || 1)));
-
-      const ctxTrend = document.getElementById('revenueTrendChart');
-      if (revenueChartInstance) {
-        revenueChartInstance.destroy();
-      }
-      revenueChartInstance = new Chart(ctxTrend, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'Total Revenue',
-              data: salesData,
-              borderColor: primaryColor,
-              backgroundColor: isDark ? 'rgba(217, 119, 54, 0.15)' : 'rgba(194, 103, 56, 0.15)',
-              tension: 0.35,
-              fill: true,
-              pointRadius: 4,
-              borderWidth: 2
-            },
-            {
-              label: 'Net Profit',
-              data: profitData,
-              borderColor: '#22c55e',
-              backgroundColor: 'transparent',
-              borderDash: [4, 4],
-              tension: 0.35,
-              pointRadius: 3,
-              borderWidth: 2
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } }
-            }
-          },
-          scales: {
-            x: {
-              grid: { display: false },
-              ticks: { color: textColor, font: { size: 10 } }
-            },
-            y: {
-              grid: { color: gridColor },
-              ticks: { color: textColor, font: { size: 10 } }
-            }
-          }
-        }
-      });
-
-      // 2. Sales by Product (Donut)
-      const prodCounts = {};
-      (state.sales || []).forEach(s => {
-        prodCounts[s.productName] = (prodCounts[s.productName] || 0) + (s.qty || 1);
-      });
-      const donutLabels = Object.keys(prodCounts).slice(0, 5);
-      const donutData = donutLabels.map(l => prodCounts[l]);
-
-      const ctxDonut = document.getElementById('productDonutChart');
-      if (productChartInstance) {
-        productChartInstance.destroy();
-      }
-      productChartInstance = new Chart(ctxDonut, {
-        type: 'doughnut',
-        data: {
-          labels: donutLabels.length ? donutLabels : ['No Data'],
-          datasets: [{
-            data: donutData.length ? donutData : [1],
-            backgroundColor: [
-              primaryColor,
-              '#e06d5c',
-              '#e59344',
-              '#5fa87d',
-              '#d46882'
-            ],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'right',
-              labels: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } }
-            }
-          },
-          cutout: '68%'
-        }
-      });
-    }
-
-    // --- RENDER SALES TABLE ---
-    function renderSalesTable() {
-      const tbody = document.getElementById('fullSalesTbody');
-      tbody.innerHTML = '';
-
-      const query = (document.getElementById('salesSearchInput')?.value || '').toLowerCase().trim();
-      const statusFilter = document.getElementById('statusFilterSelect')?.value || 'all';
-      const dateFilter = document.getElementById('dateFilterSelect')?.value || 'all';
-
-      const now = new Date();
-      const todayStr = now.toISOString().slice(0, 10);
-      const sevenDaysAgo = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
-      const thirtyDaysAgo = new Date(now - 30 * 86400000).toISOString().slice(0, 10);
-
-      const filtered = (state.sales || []).filter(s => {
-        if (query) {
-          const match =
-            (s.productName || '').toLowerCase().includes(query) ||
-            (s.buyer || '').toLowerCase().includes(query) ||
-            (s.accountInfo || '').toLowerCase().includes(query) ||
-            (s.notes || '').toLowerCase().includes(query);
-          if (!match) return false;
-        }
-
-        if (statusFilter !== 'all' && s.status !== statusFilter) return false;
-
-        if (dateFilter === 'today' && s.date !== todayStr) return false;
-        if (dateFilter === '7days' && s.date < sevenDaysAgo) return false;
-        if (dateFilter === '30days' && s.date < thirtyDaysAgo) return false;
-
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:32px; color:var(--muted-foreground);">No sales found matching your filter.</td></tr>`;
-        return;
-      }
-
-      [...filtered].reverse().forEach(s => {
-        const totalCapital = (s.capital || 0) * (s.qty || 1);
-        const totalSale = (s.price || 0) * (s.qty || 1);
-        const profit = totalSale - totalCapital;
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="color:var(--muted-foreground); white-space:nowrap;">${s.date || '—'}</td>
-          <td><strong>${escapeHtml(s.productName)}</strong></td>
-          <td>${escapeHtml(s.buyer)}</td>
-          <td style="font-size:11.5px; color:var(--muted-foreground);">${escapeHtml(s.accountInfo || '—')}</td>
-          <td>${s.qty || 1}</td>
-          <td>${formatMoney(totalCapital)}</td>
-          <td><strong>${formatMoney(totalSale)}</strong></td>
-          <td style="color:var(--success); font-weight:700;">+${formatMoney(profit)}</td>
-          <td><span class="pay-badge">${s.payment || 'GCash'}</span></td>
-          <td>
-            <span class="status-badge ${s.status}">${s.status}</span>
-          </td>
-          <td style="text-align:right; white-space:nowrap;">
-            <button class="btn btn-outline btn-sm" onclick="editSale('${s.id}')" title="Edit">✏️</button>
-            <button class="btn btn-outline btn-sm" style="color:var(--destructive);" onclick="deleteSale('${s.id}')" title="Delete">🗑️</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // --- RENDER PRODUCTS CATALOG ---
-    function renderProductsCatalog() {
-      const grid = document.getElementById('productsGrid');
-      grid.innerHTML = '';
-
-      if (!state.products || state.products.length === 0) {
-        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:32px; color:var(--muted-foreground);">No products added yet. Click "+ Add Product" to set up your catalog!</div>`;
-        return;
-      }
-
-      state.products.forEach(p => {
-        const profit = (p.price || 0) - (p.capital || 0);
-        const margin = p.price > 0 ? ((profit / p.price) * 100).toFixed(0) : 0;
-
-        const card = document.createElement('div');
-        card.className = 'product-item-card';
-        card.innerHTML = `
-          <div>
-            <div class="product-title">
-              <span>${escapeHtml(p.name)}</span>
-              <span class="brand-badge" style="font-size:9.5px;">${escapeHtml(p.category || 'General')}</span>
-            </div>
-          </div>
-          <div class="price-metrics">
-            <div>
-              <div class="price-sublabel">Cost</div>
-              <div class="price-val">${formatMoney(p.capital)}</div>
-            </div>
-            <div>
-              <div class="price-sublabel">Sell</div>
-              <div class="price-val" style="color:var(--primary);">${formatMoney(p.price)}</div>
-            </div>
-            <div>
-              <div class="price-sublabel">Profit</div>
-              <div class="price-val" style="color:var(--success);">+${formatMoney(profit)}</div>
-            </div>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:11px; color:var(--muted-foreground);">${margin}% margin</span>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-outline btn-sm" onclick="quickLogSaleFromProduct('${p.id}')">+ Log</button>
-              <button class="btn btn-outline btn-sm" onclick="editProduct('${p.id}')">✏️</button>
-              <button class="btn btn-outline btn-sm" style="color:var(--destructive);" onclick="deleteProduct('${p.id}')">🗑️</button>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    // --- POPULATE PRODUCT DROPDOWN IN SALE MODAL ---
-    function populateSaleProductDropdown() {
-      const sel = document.getElementById('saleProductSelect');
-      sel.innerHTML = '<option value="">Select a product...</option>';
-      (state.products || []).forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.textContent = `${p.name} (Sell: ${formatMoney(p.price)})`;
-        sel.appendChild(opt);
-      });
-    }
-
-    function onSaleProductChange() {
-      const prodId = document.getElementById('saleProductSelect').value;
-      const prod = state.products.find(p => p.id === prodId);
-      if (prod) {
-        document.getElementById('saleCapital').value = prod.capital || 0;
-        document.getElementById('salePrice').value = prod.price || 0;
-        calculateSaleProfit();
-      }
-    }
-
-    function calculateSaleProfit() {
-      const qty = parseFloat(document.getElementById('saleQty').value) || 1;
-      const cap = parseFloat(document.getElementById('saleCapital').value) || 0;
-      const price = parseFloat(document.getElementById('salePrice').value) || 0;
-      const profit = (price - cap) * qty;
-      document.getElementById('saleProfitPreview').textContent = formatMoney(profit);
-    }
-
-    function calculateProductProfit() {
-      const cap = parseFloat(document.getElementById('prodCapital').value) || 0;
-      const price = parseFloat(document.getElementById('prodPrice').value) || 0;
-      const profit = price - cap;
-      document.getElementById('prodProfitPreview').textContent = formatMoney(profit);
-    }
-
-    // --- SALE MODAL ACTIONS ---
-    function openAddSaleModal() {
-      populateSaleProductDropdown();
-      document.getElementById('saleForm').reset();
-      document.getElementById('saleEditId').value = '';
-      document.getElementById('saleModalTitle').textContent = 'Log New Sale';
-      document.getElementById('saleDate').value = new Date().toISOString().slice(0, 10);
-      document.getElementById('saleQty').value = '1';
-      document.getElementById('saleProfitPreview').textContent = formatMoney(0);
-      document.getElementById('saleModal').classList.add('active');
-    }
-
-    function quickLogSaleFromProduct(prodId) {
-      openAddSaleModal();
-      document.getElementById('saleProductSelect').value = prodId;
-      onSaleProductChange();
-    }
-
-    function closeSaleModal() {
-      document.getElementById('saleModal').classList.remove('active');
-    }
-
-    function handleSaleSubmit(e) {
-      e.preventDefault();
-      const editId = document.getElementById('saleEditId').value;
-      const prodId = document.getElementById('saleProductSelect').value;
-      const prod = state.products.find(p => p.id === prodId);
-      const prodName = prod ? prod.name : 'Custom Sale';
-
-      const saleData = {
-        id: editId || ('sale_' + Date.now()),
-        productId: prodId,
-        productName: prodName,
-        buyer: document.getElementById('saleBuyerName').value.trim(),
-        accountInfo: document.getElementById('saleAccountInfo').value.trim(),
-        qty: parseInt(document.getElementById('saleQty').value) || 1,
-        capital: parseFloat(document.getElementById('saleCapital').value) || 0,
-        price: parseFloat(document.getElementById('salePrice').value) || 0,
-        payment: document.getElementById('salePaymentMethod').value,
-        status: document.getElementById('saleStatus').value,
-        date: document.getElementById('saleDate').value,
-        notes: document.getElementById('saleNotes').value.trim()
-      };
-
-      if (!state.sales) state.sales = [];
-
-      if (editId) {
-        const idx = state.sales.findIndex(s => s.id === editId);
-        if (idx !== -1) {
-          state.sales[idx] = saleData;
-          showToast('Sale record updated!');
-        }
-      } else {
-        state.sales.push(saleData);
-        showToast('New sale recorded!');
-      }
-
-      saveLocalState();
-      syncDataToFirebase();
-      closeSaleModal();
-      renderDashboard();
-      renderSalesTable();
-    }
-
-    function editSale(id) {
-      const sale = state.sales.find(s => s.id === id);
-      if (!sale) return;
-
-      populateSaleProductDropdown();
-      document.getElementById('saleEditId').value = sale.id;
-      document.getElementById('saleModalTitle').textContent = 'Edit Sale Record';
-      document.getElementById('saleProductSelect').value = sale.productId;
-      document.getElementById('saleBuyerName').value = sale.buyer;
-      document.getElementById('saleAccountInfo').value = sale.accountInfo || '';
-      document.getElementById('saleQty').value = sale.qty || 1;
-      document.getElementById('saleCapital').value = sale.capital;
-      document.getElementById('salePrice').value = sale.price;
-      document.getElementById('salePaymentMethod').value = sale.payment;
-      document.getElementById('saleStatus').value = sale.status;
-      document.getElementById('saleDate').value = sale.date;
-      document.getElementById('saleNotes').value = sale.notes || '';
-
-      calculateSaleProfit();
-      document.getElementById('saleModal').classList.add('active');
-    }
-
-    function deleteSale(id) {
-      if (!confirm('Are you sure you want to delete this sale?')) return;
-      state.sales = state.sales.filter(s => s.id !== id);
-      saveLocalState();
-      syncDataToFirebase();
-      renderDashboard();
-      renderSalesTable();
-      showToast('Sale deleted.');
-    }
-
-    // --- PRODUCT MODAL ACTIONS ---
-    function openAddProductModal() {
-      document.getElementById('productForm').reset();
-      document.getElementById('prodEditId').value = '';
-      document.getElementById('productModalTitle').textContent = 'Add New Product';
-      document.getElementById('prodProfitPreview').textContent = formatMoney(0);
-      document.getElementById('productModal').classList.add('active');
-    }
-
-    function closeProductModal() {
-      document.getElementById('productModal').classList.remove('active');
-    }
-
-    function handleProductSubmit(e) {
-      e.preventDefault();
-      const editId = document.getElementById('prodEditId').value;
-      const prodData = {
-        id: editId || ('prod_' + Date.now()),
-        name: document.getElementById('prodName').value.trim(),
-        category: document.getElementById('prodCategory').value.trim() || 'General',
-        capital: parseFloat(document.getElementById('prodCapital').value) || 0,
-        price: parseFloat(document.getElementById('prodPrice').value) || 0
-      };
-
-      if (!state.products) state.products = [];
-
-      if (editId) {
-        const idx = state.products.findIndex(p => p.id === editId);
-        if (idx !== -1) {
-          state.products[idx] = prodData;
-          showToast('Product updated!');
-        }
-      } else {
-        state.products.push(prodData);
-        showToast('New product added!');
-      }
-
-      saveLocalState();
-      syncDataToFirebase();
-      closeProductModal();
-      renderProductsCatalog();
-      populateSaleProductDropdown();
-    }
-
-    function editProduct(id) {
-      const prod = state.products.find(p => p.id === id);
-      if (!prod) return;
-
-      document.getElementById('prodEditId').value = prod.id;
-      document.getElementById('productModalTitle').textContent = 'Edit Product';
-      document.getElementById('prodName').value = prod.name;
-      document.getElementById('prodCategory').value = prod.category || '';
-      document.getElementById('prodCapital').value = prod.capital;
-      document.getElementById('prodPrice').value = prod.price;
-      calculateProductProfit();
-      document.getElementById('productModal').classList.add('active');
-    }
-
-    function deleteProduct(id) {
-      if (!confirm('Delete this product from your catalog?')) return;
-      state.products = state.products.filter(p => p.id !== id);
-      saveLocalState();
-      syncDataToFirebase();
-      renderProductsCatalog();
-      populateSaleProductDropdown();
-      showToast('Product removed.');
-    }
-
-    // --- CSV EXPORT ---
-    function exportSalesToCSV() {
-      if (!state.sales || state.sales.length === 0) {
-        alert('No sales records to export!');
-        return;
-      }
-
-      const headers = ['Sale ID', 'Date', 'Product', 'Buyer', 'Account Info', 'Qty', 'Unit Capital', 'Unit Price', 'Total Sale', 'Net Profit', 'Payment', 'Status', 'Notes'];
-      const rows = state.sales.map(s => {
-        const total = (s.price || 0) * (s.qty || 1);
-        const profit = total - ((s.capital || 0) * (s.qty || 1));
-        return [
-          s.id,
-          s.date || '',
-          `"${(s.productName || '').replace(/"/g, '""')}"`,
-          `"${(s.buyer || '').replace(/"/g, '""')}"`,
-          `"${(s.accountInfo || '').replace(/"/g, '""')}"`,
-          s.qty || 1,
-          s.capital || 0,
-          s.price || 0,
-          total,
-          profit,
-          s.payment || '',
-          s.status || '',
-          `"${(s.notes || '').replace(/"/g, '""')}"`
-        ];
-      });
-
-      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `cozy_sales_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('CSV downloaded successfully!');
-    }
-
-    // --- BACKUP & RESTORE JSON ---
-    function backupDataJSON() {
-      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', `cozy_backup_${new Date().toISOString().slice(0, 10)}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('Backup JSON exported!');
-    }
-
-    function importDataJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (parsed && Array.isArray(parsed.sales)) {
-            state = parsed;
-            saveLocalState();
-            syncDataToFirebase(true);
-            renderAll();
-            showToast('Backup restored successfully!');
-          } else {
-            alert('Invalid backup file format!');
-          }
-        } catch (err) {
-          alert('Error reading JSON file!');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function resetToSampleData() {
-      if (!confirm('Reset all sales and products to default sample data?')) return;
-      initDefaultState();
-      syncDataToFirebase(true);
-      renderAll();
-      showToast('Sample data reset.');
-    }
-
-    function saveSettings() {
-      state.currency = document.getElementById('settingCurrency').value.trim() || '₱';
-      state.storeName = document.getElementById('settingStoreName').value.trim() || 'Cozy';
-      saveLocalState();
-      syncDataToFirebase(true);
-      renderAll();
-      showToast('Preferences saved!');
-    }
-
-    // --- ACCENT & THEME CONTROLS ---
-    function setThemeAccent(accent) {
-      if (accent === 'default') {
-        document.documentElement.removeAttribute('data-accent');
-      } else {
-        document.documentElement.setAttribute('data-accent', accent);
-      }
-      localStorage.setItem('cozy_accent', accent);
-
-      document.querySelectorAll('.swatch-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-accent') === accent);
-      });
-
-      renderCharts();
-    }
-
-    function toggleDarkMode() {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('cozy_dark_mode', isDark ? 'dark' : 'light');
-      updateThemeIcons();
-      renderCharts();
-    }
-
-    function updateThemeIcons() {
-      const isDark = document.documentElement.classList.contains('dark');
-      document.getElementById('moonIcon').style.display = isDark ? 'block' : 'none';
-      document.getElementById('sunIcon').style.display = isDark ? 'none' : 'block';
-    }
-
-    // --- TOAST HELPER ---
-    let toastTimeout;
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      document.getElementById('toastMsg').textContent = msg;
-      t.classList.add('show');
-      clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => {
-        t.classList.remove('show');
-      }, 2400);
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    // --- INITIALIZATION ---
+    // Check active session
     window.addEventListener('DOMContentLoaded', () => {
-      // 1. Theme
-      const savedTheme = localStorage.getItem('cozy_dark_mode') || 'dark';
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-      updateThemeIcons();
+      const session = localStorage.getItem('session');
+      if (session) {
+        try {
+          const parsed = JSON.parse(session);
+          if (parsed && parsed.username && parsed.appName === APP_NAME) {
+            window.location.href = 'dashboard.html';
+            return;
+          } else {
+            localStorage.removeItem('session');
+          }
+        } catch (e) {
+          localStorage.removeItem('session');
+        }
+      }
+    });
 
-      // 2. Accent
-      const savedAccent = localStorage.getItem('cozy_accent') || 'default';
-      setThemeAccent(savedAccent);
+    // Load Profiles
+    let profilesList = [];
+    let selectedProfile = null;
+    let avatarsCache = {};
 
-      // 3. Connect Firebase & Listen for Realtime Sync
-      initFirebaseListeners();
+    // Listen to user avatars in settings
+    getRef('settings').on('value', (snap) => {
+      const data = snap.val() || {};
+      avatarsCache = {};
+      Object.keys(data).forEach(k => {
+        if (data[k] && data[k].avatar) {
+          avatarsCache[k] = data[k].avatar;
+        }
+      });
+      renderProfiles();
+    });
+
+    getRef('users').on('value', (snapshot) => {
+      
+      const usersObj = snapshot.val() || {};
+      if (!snapshot.exists() || Object.keys(usersObj).length === 0) {
+        const defaultOwner = {
+          id: Date.now(),
+          username: 'owner',
+          customName: 'Owner',
+          password: hashPassword('1234'),
+          plainPassword: '1234',
+          role: 'owner',
+          commissionMode: 'bracket',
+          profitPercent: 20,
+          createdDate: new Date().toISOString().split('T')[0],
+          createdAt: new Date().toISOString()
+        };
+        getRef('users/owner').set(defaultOwner);
+        return;
+      }
+
+      profilesList = Object.entries(usersObj).map(([key, val]) => ({
+        key,
+        ...val
+      }));
+      // Sort owner first, then alphabetically
+      profilesList.sort((a, b) => {
+        if (a.role === 'owner' && b.role !== 'owner') return -1;
+        if (a.role !== 'owner' && b.role === 'owner') return 1;
+        return (a.customName || a.username || '').localeCompare(b.customName || b.username || '');
+      });
+      renderProfiles();
+    });
+
+    function renderProfiles() {
+      const grid = document.getElementById('profilesGrid');
+      if (!grid) return;
+
+      const hasOwner = profilesList.some(p => (p.role || '').toLowerCase() === 'owner');
+      const ownerOpt = document.getElementById('ownerRoleOption');
+      if (ownerOpt) {
+        ownerOpt.style.display = hasOwner ? 'none' : 'block';
+      }
+
+      const cardsHtml = profilesList.map((profile, idx) => {
+        const displayName = (profile.customName || profile.username || 'User').replace(/^@/, '');
+        const initial = (displayName[0] || '?').toUpperCase();
+        const roleLabel = (profile.role || 'admin').toLowerCase() === 'owner' ? 'Owner' : 'Admin';
+        const avatarUrl = profile.avatar || avatarsCache[profile.key] || avatarsCache[profile.username];
+        const avatarInner = avatarUrl
+          ? `<img src="${avatarUrl}" alt="${displayName}">`
+          : initial;
+
+        return `
+          <button type="button" class="profile-card" data-idx="${idx}">
+            <div class="profile-avatar">${avatarInner}</div>
+            <span class="profile-name">${displayName}</span>
+            <span class="profile-role">${roleLabel}</span>
+          </button>
+        `;
+      }).join('');
+
+      const addCardHtml = `
+        <button type="button" class="profile-card add-card" id="openAddProfileBtn">
+          <div class="add-avatar">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/><path d="M12 5v14"/>
+            </svg>
+          </div>
+          <span class="profile-name" style="color:inherit;">Add Profile</span>
+        </button>
+      `;
+
+      grid.innerHTML = cardsHtml + addCardHtml;
+
+      grid.querySelectorAll('.profile-card:not(.add-card)').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.getAttribute('data-idx'), 10);
+          openLoginModal(profilesList[index]);
+        });
+      });
+
+      const addBtn = document.getElementById('openAddProfileBtn');
+      if (addBtn) {
+        addBtn.addEventListener('click', openAddProfileModal);
+      }
+    }
+
+    // Login Modal Logic
+    const loginModal = document.getElementById('loginModal');
+    const pinInput = document.getElementById('pinInput');
+    const loginError = document.getElementById('loginError');
+
+    function openLoginModal(profile) {
+      selectedProfile = profile;
+      const displayName = (profile.customName || profile.username || 'User').replace(/^@/, '');
+      const initial = (displayName[0] || '?').toUpperCase();
+      const avatarUrl = profile.avatar || avatarsCache[profile.key] || avatarsCache[profile.username];
+      const modalAvatar = document.getElementById('modalAvatar');
+
+      if (avatarUrl) {
+        modalAvatar.innerHTML = `<img src="${avatarUrl}" alt="${displayName}">`;
+      } else {
+        modalAvatar.textContent = initial;
+      }
+
+      document.getElementById('modalUsername').textContent = displayName;
+      pinInput.value = '';
+      loginError.textContent = '';
+      loginError.classList.remove('show');
+      loginModal.classList.add('open');
+      setTimeout(() => pinInput.focus(), 50);
+    }
+
+    function closeLoginModal() {
+      loginModal.classList.remove('open');
+      selectedProfile = null;
+    }
+
+    document.getElementById('closeLoginModal').addEventListener('click', closeLoginModal);
+    loginModal.addEventListener('click', (e) => {
+      if (e.target === loginModal) closeLoginModal();
+    });
+
+    document.getElementById('togglePinBtn').addEventListener('click', () => {
+      pinInput.type = pinInput.type === 'password' ? 'text' : 'password';
+      pinInput.focus();
+    });
+
+    document.getElementById('pinLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!selectedProfile) return;
+
+      const entered = pinInput.value.trim();
+      if (!entered) return;
+
+      const signInBtn = document.getElementById('signInBtn');
+      signInBtn.disabled = true;
+      signInBtn.textContent = 'Signing in...';
+      loginError.classList.remove('show');
+
+      try {
+        const userSnap = await getRef(`users/${selectedProfile.key}`).once('value');
+        const userData = userSnap.val() || selectedProfile;
+        const hashedEntered = hashPassword(entered);
+
+        if (userData.password !== hashedEntered && userData.password !== entered) {
+          throw new Error('Incorrect PIN or password');
+        }
+
+        const session = {
+          appName: APP_NAME,
+          id: userData.id || selectedProfile.key || userData.username,
+          username: userData.username,
+          role: userData.role,
+          customName: userData.customName || userData.username,
+          commissionMode: userData.commissionMode || 'bracket',
+          profitPercent: userData.profitPercent || 20,
+          loginTime: new Date().toISOString()
+        };
+
+        localStorage.setItem('session', JSON.stringify(session));
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        loginError.textContent = err.message || 'Sign in failed';
+        loginError.classList.add('show');
+      } finally {
+        signInBtn.disabled = false;
+        signInBtn.textContent = 'Sign In';
+      }
+    });
+
+    // Add Profile Modal Logic
+    const addProfileModal = document.getElementById('addProfileModal');
+    const addProfileError = document.getElementById('addProfileError');
+
+    function openAddProfileModal() {
+      document.getElementById('newUsername').value = '';
+      document.getElementById('newPin').value = '';
+      const hasOwner = profilesList.some(p => (p.role || '').toLowerCase() === 'owner');
+      document.getElementById('newRole').value = hasOwner ? 'admin' : 'owner';
+      addProfileError.textContent = '';
+      addProfileError.classList.remove('show');
+      addProfileModal.classList.add('open');
+      setTimeout(() => document.getElementById('newUsername').focus(), 50);
+    }
+
+    function closeAddProfileModal() {
+      addProfileModal.classList.remove('open');
+    }
+
+    document.getElementById('closeAddProfileModal').addEventListener('click', closeAddProfileModal);
+    addProfileModal.addEventListener('click', (e) => {
+      if (e.target === addProfileModal) closeAddProfileModal();
+    });
+
+    document.getElementById('addProfileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let rawUsername = document.getElementById('newUsername').value.trim();
+      const rawPin = document.getElementById('newPin').value.trim();
+      const role = document.getElementById('newRole').value || 'admin';
+
+      if (!rawUsername || !rawPin) return;
+
+      const customName = rawUsername.replace(/^@/, '');
+      const username = rawUsername.replace(/^@/, '');
+      const userKey = sanitizeFirebaseKey(username);
+
+      const createBtn = document.getElementById('createProfileBtn');
+      createBtn.disabled = true;
+      createBtn.textContent = 'Creating...';
+      addProfileError.classList.remove('show');
+
+      try {
+        const existing = await getRef(`users/${userKey}`).once('value');
+        if (existing.exists()) {
+          throw new Error('Username already exists');
+        }
+
+        await getRef(`users/${userKey}`).set({
+          id: Date.now(),
+          username,
+          customName,
+          password: hashPassword(rawPin),
+          plainPassword: rawPin,
+          role,
+          commissionMode: 'bracket',
+          profitPercent: 20,
+          createdDate: new Date().toISOString().split('T')[0],
+          createdAt: new Date().toISOString()
+        });
+
+        closeAddProfileModal();
+      } catch (err) {
+        addProfileError.textContent = err.message || 'Failed to create profile';
+        addProfileError.classList.add('show');
+      } finally {
+        createBtn.disabled = false;
+        createBtn.textContent = 'Create Profile';
+      }
     });
   </script>
 </body>
