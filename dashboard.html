@@ -1577,8 +1577,26 @@
                   <input type="text" id="settingsDisplayName" class="input-control" required>
                 </div>
                 <div class="form-field">
-                  <label>Avatar Image URL (Optional)</label>
-                  <input type="url" id="settingsAvatarUrl" class="input-control" placeholder="https://...">
+                  <label>Profile Picture (Avatar)</label>
+                  <div style="display:flex; align-items:center; gap:14px; margin-top:6px; padding:12px; background:var(--muted); border-radius:12px; border:1px solid var(--border);">
+                    <div id="settingsAvatarPreview" onclick="document.getElementById('settingsAvatarFile').click()" title="Click to change photo" style="width:64px; height:64px; border-radius:9999px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; overflow:hidden; border:2px solid var(--primary); cursor:pointer; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                      U
+                    </div>
+                    <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                        <label class="btn btn-sm btn-primary" style="cursor:pointer; display:inline-flex; align-items:center; gap:6px; margin:0;">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                          <span>Upload from Phone / PC</span>
+                          <input type="file" id="settingsAvatarFile" accept="image/*" style="display:none;">
+                        </label>
+                        <button type="button" class="btn btn-sm btn-outline" id="btnRemoveAvatar" onclick="removeCurrentAvatar()" style="color:var(--destructive); border-color:var(--border);">
+                          Remove
+                        </button>
+                      </div>
+                      <input type="url" id="settingsAvatarUrl" class="input-control" placeholder="Or paste image URL (https://...)" style="font-size:12px; height:32px; padding:0 8px;">
+                      <span style="font-size:11px; color:var(--muted-foreground);">Photos from mobile camera or PC are auto-optimized for fast loading</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="form-field">
                   <label>New PIN / Password (leave blank to keep current)</label>
@@ -2173,6 +2191,17 @@
           <input type="text" id="editUserPassword" class="input-control" placeholder="Enter new PIN or password">
         </div>
         <div class="form-field">
+          <label>Profile Picture (Avatar)</label>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div id="editUserAvatarPreview" style="width:40px; height:40px; border-radius:9999px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; overflow:hidden; flex-shrink:0;">U</div>
+            <input type="url" id="editUserAvatarUrl" class="input-control" placeholder="Paste Image URL">
+            <label class="btn btn-sm btn-outline" style="cursor:pointer; white-space:nowrap;">
+              📁 Upload
+              <input type="file" id="editUserAvatarFile" accept="image/*" style="display:none;">
+            </label>
+          </div>
+        </div>
+        <div class="form-field">
           <label>Commission Mode</label>
           <select id="editUserCommModeSelect" class="select-control" onchange="toggleEditUserCommFields()">
             <option value="bracket">Bracket-Based (Global Salary Rules)</option>
@@ -2509,7 +2538,18 @@
       const displayName = (currentSession.customName || currentSession.username).replace(/^@/, '');
       document.getElementById('userName').textContent = displayName;
       document.getElementById('userRole').textContent = isOwner() ? 'Owner' : 'Admin';
-      document.getElementById('userAvatar').textContent = (displayName[0] || 'U').toUpperCase();
+      const userAv = currentSession.avatar || (users.find(u => u.username === currentUsername)?.avatar);
+      if (userAv) {
+        document.getElementById('userAvatar').innerHTML = `<img src="${userAv}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:9999px;">`;
+        if (document.getElementById('settingsAvatarPreview')) {
+          document.getElementById('settingsAvatarPreview').innerHTML = `<img src="${userAv}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+      } else {
+        document.getElementById('userAvatar').textContent = (displayName[0] || 'U').toUpperCase();
+        if (document.getElementById('settingsAvatarPreview')) {
+          document.getElementById('settingsAvatarPreview').textContent = (displayName[0] || 'U').toUpperCase();
+        }
+      }
       document.getElementById('settingsDisplayName').value = displayName;
 
       // Adapt labels for Owner vs Admin (matching IMG_2338.MP4)
@@ -2678,8 +2718,12 @@
         if (snap.exists()) {
           settings = { ...settings, ...snap.val() };
           if (settings.avatar) {
-            document.getElementById('userAvatar').innerHTML = `<img src="${settings.avatar}" alt="Avatar">`;
+            document.getElementById('userAvatar').innerHTML = `<img src="${settings.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:9999px;">`;
             document.getElementById('settingsAvatarUrl').value = settings.avatar;
+            const prev = document.getElementById('settingsAvatarPreview');
+            if (prev) {
+              prev.innerHTML = `<img src="${settings.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
+            }
           }
         }
       });
@@ -4553,13 +4597,20 @@
         const displayName = (user.customName || user.username || 'User').replace(/^@/, '');
         const roleBadge = (user.role || 'admin').toLowerCase() === 'owner' ? 'Owner' : 'Admin';
         const pinHint = user.plainPassword ? ` • PIN: ${user.plainPassword}` : '';
+        const userAv = user.avatar;
+        const avHtml = userAv 
+          ? `<img src="${userAv}" alt="${displayName}" style="width:38px;height:38px;border-radius:9999px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;">` 
+          : `<div style="width:38px;height:38px;border-radius:9999px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;">${(displayName[0]||'U').toUpperCase()}</div>`;
 
         return `
           <div class="item-card">
             <div class="item-card-header">
-              <div>
-                <div class="item-card-title">${displayName} <span class="badge badge-secondary" style="margin-left:4px;">${roleBadge}</span></div>
-                <div class="item-card-sub">@${(user.username || '').replace(/^@/, '')} • ${modeLabel}${pinHint}</div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                ${avHtml}
+                <div>
+                  <div class="item-card-title">${displayName} <span class="badge badge-secondary" style="margin-left:4px;">${roleBadge}</span></div>
+                  <div class="item-card-sub">@${(user.username || '').replace(/^@/, '')} • ${modeLabel}${pinHint}</div>
+                </div>
               </div>
               <div style="display:flex; gap:4px;">
                 <button class="btn btn-sm btn-outline" onclick="openEditCommissionModal('${user.id}')">Edit</button>
@@ -4592,6 +4643,12 @@
         document.getElementById('editUserCommModeSelect').value = mode;
       }
       document.getElementById('editProfitPercent').value = user.profitPercent ?? 20;
+      const avUrl = user.avatar || '';
+      if (document.getElementById('editUserAvatarUrl')) document.getElementById('editUserAvatarUrl').value = avUrl;
+      const avPrev = document.getElementById('editUserAvatarPreview');
+      if (avPrev) {
+        avPrev.innerHTML = avUrl ? `<img src="${avUrl}" style="width:100%;height:100%;object-fit:cover;">` : (user.customName || user.username || 'U')[0].toUpperCase();
+      }
       toggleEditUserCommFields();
       document.getElementById('editCommissionModal').classList.add('show');
     }
@@ -4609,7 +4666,9 @@
       const profitPercent = commissionMode !== 'bracket' ? (parseFloat(document.getElementById('editProfitPercent').value) || 0) : 20;
       const key = user.key || sanitizeUserKey(user.username);
 
-      const updates = { customName, role, commissionMode, profitPercent };
+      const avatar = document.getElementById('editUserAvatarUrl')?.value.trim() || user.avatar || '';
+      const updates = { customName, role, commissionMode, profitPercent, avatar };
+      getRef('settings/' + key).update({ avatar });
       if (newPass) {
         updates.password = hashPassword(newPass);
         updates.plainPassword = newPass;
@@ -4644,10 +4703,18 @@
       }
 
       showSyncingIndicator();
+      if (avatarUrl !== undefined) {
+        updates.avatar = avatarUrl;
+      }
       await getRef('users/' + safeKey).update(updates);
       await getRef('settings/' + safeKey).update({ avatar: avatarUrl });
 
       currentSession.customName = newName;
+      if (avatarUrl) currentSession.avatar = avatarUrl;
+      const avTarget = document.getElementById('userAvatar');
+      if (avTarget) {
+        avTarget.innerHTML = avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:9999px;">` : (newName[0] || 'U').toUpperCase();
+      }
       localStorage.setItem('session', JSON.stringify(currentSession));
       document.getElementById('userName').textContent = newName;
       document.getElementById('dashboardSubtitle').textContent = `Welcome back, ${newName}`;
@@ -4724,6 +4791,74 @@
         loadAllData();
       }
     });
-  </script>
+  
+    // Client-side image compression: Scales phone & PC photos to clean avatar thumbnails (< 35KB)
+    function compressImageForAvatar(file, maxDim, quality, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > h) {
+            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          } else {
+            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          callback(dataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function setupAvatarFileInput(fileInputId, urlInputId, previewId) {
+      const fileInput = document.getElementById(fileInputId);
+      const urlInput = document.getElementById(urlInputId);
+      const preview = document.getElementById(previewId);
+      if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          compressImageForAvatar(file, 256, 0.86, (compressedDataUrl) => {
+            if (urlInput) urlInput.value = compressedDataUrl;
+            if (preview) {
+              preview.innerHTML = `<img src="${compressedDataUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+            }
+          });
+        });
+      }
+      if (urlInput && preview) {
+        urlInput.addEventListener('input', (e) => {
+          const val = e.target.value.trim();
+          if (val) {
+            preview.innerHTML = `<img src="${val}" style="width:100%;height:100%;object-fit:cover;">`;
+          } else {
+            preview.textContent = (currentSession?.customName || currentSession?.username || 'U')[0].toUpperCase();
+          }
+        });
+      }
+    }
+
+    function removeCurrentAvatar() {
+      const urlInput = document.getElementById('settingsAvatarUrl');
+      const prev = document.getElementById('settingsAvatarPreview');
+      if (urlInput) urlInput.value = '';
+      if (prev) {
+        prev.textContent = (currentSession?.customName || currentSession?.username || 'U')[0].toUpperCase();
+      }
+      showToast('Avatar cleared. Click Save Profile to apply.');
+    }
+
+    setupAvatarFileInput('settingsAvatarFile', 'settingsAvatarUrl', 'settingsAvatarPreview');
+    setupAvatarFileInput('editUserAvatarFile', 'editUserAvatarUrl', 'editUserAvatarPreview');
+    setupAvatarFileInput('newUserAvatarFile', 'newUserAvatarUrl', 'newUserAvatarPreview');
+</script>
 </body>
 </html>

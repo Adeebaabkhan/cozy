@@ -617,9 +617,23 @@
         <div class="form-group">
           <label class="form-label" for="newRole">Role</label>
           <select id="newRole" class="form-select">
-            <option value="admin">Admin</option>
+            <option value="admin">Admin / Agent</option>
             <option value="owner" id="ownerRoleOption">Owner</option>
           </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="newAvatar">Profile Picture (Image URL or Upload)</label>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="url" id="newAvatar" class="form-input" placeholder="Paste Image URL or upload">
+            <label class="btn-primary" style="display:inline-flex; align-items:center; justify-content:center; width:auto; padding:0 12px; cursor:pointer; font-size:12px; white-space:nowrap; height:40px;">
+              📁 Upload
+              <input type="file" id="newAvatarFile" accept="image/*" style="display:none;">
+            </label>
+          </div>
+          <div id="newAvatarPreviewWrap" style="display:none; margin-top:8px; align-items:center; gap:8px;">
+            <img id="newAvatarPreview" src="" style="width:40px; height:40px; border-radius:9999px; object-fit:cover; border:1px solid var(--border);">
+            <span style="font-size:12px; color:var(--muted-foreground);">Photo attached</span>
+          </div>
         </div>
         <p id="addProfileError" class="error-text" style="margin-bottom: 12px;"></p>
         <button type="submit" id="createProfileBtn" class="btn-primary">Create Profile</button>
@@ -934,6 +948,8 @@
     function openAddProfileModal() {
       document.getElementById('newUsername').value = '';
       document.getElementById('newPin').value = '';
+      if (document.getElementById('newAvatar')) document.getElementById('newAvatar').value = '';
+      if (document.getElementById('newAvatarPreviewWrap')) document.getElementById('newAvatarPreviewWrap').style.display = 'none';
       const hasOwner = profilesList.some(p => (p.role || '').toLowerCase() === 'owner');
       document.getElementById('newRole').value = hasOwner ? 'admin' : 'owner';
       addProfileError.textContent = '';
@@ -963,6 +979,7 @@
       const username = rawUsername.replace(/^@/, '');
       const userKey = sanitizeFirebaseKey(username);
 
+      const rawAvatar = document.getElementById('newAvatar')?.value.trim() || '';
       const createBtn = document.getElementById('createProfileBtn');
       createBtn.disabled = true;
       createBtn.textContent = 'Creating...';
@@ -981,11 +998,15 @@
           password: hashPassword(rawPin),
           plainPassword: rawPin,
           role,
+          avatar: rawAvatar,
           commissionMode: 'bracket',
           profitPercent: 20,
           createdDate: new Date().toISOString().split('T')[0],
           createdAt: new Date().toISOString()
         });
+        if (rawAvatar) {
+          await getRef(`settings/${userKey}`).update({ avatar: rawAvatar });
+        }
 
         closeAddProfileModal();
       } catch (err) {
@@ -996,6 +1017,60 @@
         createBtn.textContent = 'Create Profile';
       }
     });
-  </script>
+  
+    // Avatar upload handler for Add Profile with auto-compression
+    function compressProfileAvatar(file, maxDim, quality, callback) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > h) {
+            if (w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          } else {
+            if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          callback(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    const newAvatarFileInput = document.getElementById('newAvatarFile');
+    const newAvatarUrlInput = document.getElementById('newAvatar');
+    if (newAvatarFileInput) {
+      newAvatarFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        compressProfileAvatar(file, 256, 0.86, (compressedDataUrl) => {
+          if (newAvatarUrlInput) newAvatarUrlInput.value = compressedDataUrl;
+          const prev = document.getElementById('newAvatarPreview');
+          const wrap = document.getElementById('newAvatarPreviewWrap');
+          if (prev) prev.src = compressedDataUrl;
+          if (wrap) wrap.style.display = 'flex';
+        });
+      });
+    }
+    if (newAvatarUrlInput) {
+      newAvatarUrlInput.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        const prev = document.getElementById('newAvatarPreview');
+        const wrap = document.getElementById('newAvatarPreviewWrap');
+        if (val && prev && wrap) {
+          prev.src = val;
+          wrap.style.display = 'flex';
+        } else if (wrap) {
+          wrap.style.display = 'none';
+        }
+      });
+    }
+</script>
 </body>
 </html>
